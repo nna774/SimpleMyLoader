@@ -8,7 +8,7 @@ efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
     EFI_LOADED_IMAGE *LoadedImageParent;
     EFI_LOADED_IMAGE *LoadedImage;
     EFI_HANDLE *Image;
-    CHAR16 *Options = L"root=/dev/sda2 rootfstype=btrfs rw quiet splash";
+    CHAR16 *Options = L"root=/dev/sda5 rootfstype=btrfs rw quiet splash";
     EFI_STATUS Status=EFI_SUCCESS;
 
     InitializeLib(ImageHandle, SystemTable);
@@ -20,18 +20,21 @@ efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
         return Status;
     }
 
-    Path = FileDevicePath(LoadedImageParent->DeviceHandle, L"\\vmlinuz");
+    Print(L"Hello, EFI!!\n");
+    Path = FileDevicePath(LoadedImageParent->DeviceHandle, L"\\vmlinuz-linux");
     if (Path == NULL) {
         Print(L"Could not get device path.");
         return EFI_INVALID_PARAMETER;
     }
     
+    Print(L"Hello, EFI!!!\n");
     Status = uefi_call_wrapper(BS->LoadImage, 6, FALSE, ImageHandle, Path, NULL, 0, &Image);
     if (EFI_ERROR(Status)) {
         Print(L"Could not load %r", Status);
         FreePool(Path);
         return Status;
     }
+    Print(L"Hello, EFI!!!!\n");
 
     Status = uefi_call_wrapper(BS->OpenProtocol, 6, Image, &LoadedImageProtocol, &LoadedImage, ImageHandle, NULL, EFI_OPEN_PROTOCOL_GET_PROTOCOL);
     if (EFI_ERROR(Status)) {
